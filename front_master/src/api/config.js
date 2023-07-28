@@ -1,8 +1,8 @@
 // export const baseUrl=process.env.VUE_APP_API_HOST
 import router from "@/router";
 //修改项目环境
-const baseUrl='http://43.142.142.39:18080/api'
-// const baseUrl='http://www.zuel-force.cn:8080/api'
+// const baseUrl='http://43.142.142.39:18080/api'
+const baseUrl ='http://localhost:8080/api'
 import axios from 'axios'
 import {resetUserState} from "@/view/pageConfig";
 import {message} from "ant-design-vue";
@@ -17,9 +17,12 @@ function post(data, url) {
         url: url,
         method: 'post',
         data,
-        // headers: {
-        //     'Content-type': 'application/json',
-        // },
+        transformRequest: [
+            function (data) {
+                // 将请求数据转换成功 formdata 接收格式
+                return JSON.stringify(data)
+            }
+        ],
     })
 
 }

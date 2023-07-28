@@ -5,7 +5,7 @@
         <img :src="require('@/assets/carouse_login.png')"/>
       </a-col>
       <a-col :span="12" class="login-form-container">
-        <div class="title">{{name}}</div>
+        <div class="title">{{ name }}</div>
         <a-form ref="form" :model="formData" class="form">
           <a-form-item
               label="账号"
@@ -42,7 +42,7 @@
           </a-form-item>
         </a-form>
         <a-row type="flex" justify="space-between">
-          <a-checkbox  size="large">自动登录</a-checkbox>
+          <a-checkbox size="large">自动登录</a-checkbox>
           <a>忘记密码</a>
         </a-row>
         <a-row>
@@ -63,7 +63,7 @@
     <a-row class="foot">
       <a-row type="flex" justify="center">
         Copyright © 2023 - Present
-        <a href="javascript:void(0);" target="_blank" style="margin:0 5px;">{{copyRight}}</a>
+        <a href="javascript:void(0);" target="_blank" style="margin:0 5px;">{{ copyRight }}</a>
         版权所有
       </a-row>
     </a-row>
@@ -72,64 +72,78 @@
 
 <script>
 import router from "@/router";
-import {login} from '@/api/api'
-import {reactive, ref} from "vue";
+import {login, register} from '@/api/api'
+import {reactive, ref, onMounted} from "vue";
 import storage from "@/store/store";
 import {message} from "ant-design-vue";
 import {HAS_LOGIN, USER_INFO} from "@/store/constant";
 import {app, user} from "@/view/pageConfig";
+
 export default {
   name: 'Login',
   setup() {
-    let loading=ref(false)
-    const form=ref(null)
-    const formData=reactive({
+    let loading = ref(false)
+    const form = ref(null)
+    const formData = reactive({
       userAccount: '',
       userPassword: '',
     })
-    const Login=(data)=>{
-      return new Promise((resolve)=>{
-        login(data).then(res=>{
+    const Login = (data) => {
+      return new Promise((resolve) => {
+        login(data).then(res => {
           resolve(res)
         })
       })
     }
-    const handleLogin = ()=> {
-            loading.value = true
-            form.value.validate().then(valid => {
-              if (valid) {
-                loading.value = true
-                Login(formData).then(res => {
-                  console.log('返回的登录数据',res)
-                  if(res.data.code===0)
-                  {
-                    storage.set(HAS_LOGIN,true)
-                    user.name=res.data.data.username||'null'
-                    user.id=res.data.data.id
-                    user.userInfo=res.data.data
-                    storage.set(USER_INFO,res.data.data)
-                    // console.log('登录返回的数据',res)
-                    message.success('登录成功')
-                    router.push({ path:  '/' })
-                  }
-                  else {
-                    message.error('登录信息出错，请重新填写')
-                  }
+    const handleLogin = () => {
+      loading.value = true
+      form.value.validate().then(valid => {
+        if (valid) {
+          loading.value = true
+          Login(formData).then(res => {
+            console.log('返回的登录数据', res)
+            if (res.data.code === 0) {
+              storage.set(HAS_LOGIN, true)
+              user.name = res.data.data.username || 'null'
+              user.id = res.data.data.id
+              user.userInfo = res.data.data
+              storage.set(USER_INFO, res.data.data)
+              // console.log('登录返回的数据',res)
+              message.success('登录成功')
+              router.push({path: '/'})
+            } else {
+              message.error('登录信息出错，请重新填写')
+            }
 
-                }).finally(() => {
-                  loading.value = false
-                })
-              }
-            })
-          }
+          }).finally(() => {
+            loading.value = false
+          })
+        }
+      })
+    }
+    //生命钩子
+    onMounted(()=>{
+      const data = {
+        checkPassword: 1,
+        tenantCode: 1,
+        userAccount: '1234567',
+        userPassword: '111'
+      }
+      const test = () => {
+        register(data).then(res => {
+          console.log('注册的登录信息', res)
+        })
+      }
+      test()
+    })
     return {
       redirect: undefined,
       loading,
       msgLoading: false,
       formData,
       form,
-      copyRight:app.copyRight,
-      name:app.appName,
+      copyRight: app.copyRight,
+      name: app.appName,
       handleLogin,
       // rules: {
       //   account: [{required: true, trigger: 'blur', message: '请输入用户名'}],
@@ -138,21 +152,14 @@ export default {
     }
   },
 
-  // watch: {
-  //   $route: {
-  //     handler: function (route) {
-  //       this.redirect = route.query && route.query.redirect
-  //     },
-  //     immediate: true
-  //   }
-  // },
+
 }
 </script>
 
 <style lang='less' scoped>
 .login-container {
   height: 100vh;
-  background:linear-gradient(to bottom, rgba(255,255,255,0.2),  rgba(0,0,0,0.3)), url("../../assets/carouse.png") no-repeat;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.3)), url("../../assets/carouse.png") no-repeat;
   background-size: cover;
 
   .login-main {

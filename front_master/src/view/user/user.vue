@@ -1,26 +1,26 @@
 <template>
   <div>
-<!--    <a-input-->
-<!--        v-model:value="searchValue"-->
-<!--        placeholder="Search users"-->
-<!--        style="width: 200px"-->
-<!--        @change="handleSearch"-->
-<!--    />-->
-<!--    <a-divider />-->
+    <!--    <a-input-->
+    <!--        v-model:value="searchValue"-->
+    <!--        placeholder="Search users"-->
+    <!--        style="width: 200px"-->
+    <!--        @change="handleSearch"-->
+    <!--    />-->
+    <!--    <a-divider />-->
     <a-table :loading="loading" :columns="columns" :dataSource="dataSource" :pagination="pagination">
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'avatarUrl'">
-          <a-avatar :src="record.avatarUrl||getAvatar(record.id)" />
+          <a-avatar :src="record.avatarUrl||getAvatar(record.id)"/>
         </template>
         <template v-else-if="column.key === 'createTime'">
           {{ DateToString(record.createTime) }}
         </template>
         <template v-else-if="column.key === 'username'">
-          <span v-if="record.username" class="username">{{record.username}}</span>
+          <span v-if="record.username" class="username">{{ record.username }}</span>
           <span v-else class="noname">未命名用户</span>
 
         </template>
-        <template  v-else-if="column.key === 'operation'">
+        <template v-else-if="column.key === 'operation'">
           <a-popconfirm
               title="请确认删除此用户?"
               placement="topRight"
@@ -38,26 +38,33 @@
 
 <script>
 import {defineComponent, onMounted, ref} from 'vue';
-import { deleteUser, getUserList, searchUser } from '@/api/api';
+import {deleteUser, getUserList, searchUser} from '@/api/api';
 import {DateToString} from "@/utils/date";
 import {userAvatar} from "@/view/pageConfig";
 import {message} from "ant-design-vue";
+
 export default defineComponent({
   data() {
   },
-  setup(){
+  setup() {
     // let state={
-      let dataSource=ref([])
+    let dataSource = ref([])
     // }
-    let searchValue=ref(undefined)
-    let loading=ref(true)
+    // 模拟请求参数
+    let requestParam = {
+      current: 1,
+      size: 50
+    }
+    let searchValue = ref(undefined)
+    let loading = ref(true)
+
     function fetchData() {
-      getUserList().then((response) => {
+      getUserList(requestParam).then((response) => {
         // loading.value=true
-        dataSource.value = response.data.data;
-      }).catch(err=>{
-        console.log('userErr',err)
-      }).finally(()=>{
+        dataSource.value = response.data.data.record;
+      }).catch(err => {
+        console.log('userErr', err)
+      }).finally(() => {
         // loading.value=false
         setTimeout(() => {
           loading.value = false
@@ -65,10 +72,12 @@ export default defineComponent({
         }, 100)
       })
     }
-    function getAvatar(id){
-       return  userAvatar[id%userAvatar.length]
+
+    function getAvatar(id) {
+      return userAvatar[id % userAvatar.length]
     }
-    function  handleSearch() {
+
+    function handleSearch() {
       if (searchValue.value) {
         searchUser(searchValue).then((response) => {
           dataSource.value = response.data.data;
@@ -85,7 +94,8 @@ export default defineComponent({
         fetchData();
       });
     }
-    onMounted(()=>{
+
+    onMounted(() => {
       fetchData();
     })
 
@@ -94,11 +104,11 @@ export default defineComponent({
       searchValue,
       dataSource,
       loading,
-      pagination:{
-        pageSize:8
+      pagination: {
+        pageSize: 8
       },
       getAvatar,
-      DateToString:(date)=>{
+      DateToString: (date) => {
         return DateToString(date)
       },
       statusColorMap: {
@@ -108,16 +118,15 @@ export default defineComponent({
         3: 'error',
       },
       columns: [
-        {key: 'id',  dataIndex: 'id', title: 'ID', },
+        {key: 'id', dataIndex: 'id', title: 'ID',},
         {key: 'avatarUrl', dataIndex: 'avatarUrl', title: '头像'},
-        {key: 'username',  dataIndex: 'username', title: '用户名' },
-        {key: 'phone', dataIndex: 'phone', title: '电话号码' },
-        {key: 'email',  dataIndex: 'email', title: '邮箱' },
-        {key: 'userAccount', dataIndex: 'userAccount', title: '用户账号' },
-        {key: 'gender',  dataIndex: 'gender', title: '性别' },
-        {key: 'inviteCode',  dataIndex: 'inviteCode', title: '邀请码' },
-        {key: 'createTime',  dataIndex: 'createTime', title: '创建时间' },
-        {key: 'operation',  dataIndex: 'operation', title: '操作' },
+        {key: 'userName', dataIndex: 'userName', title: '用户名'},
+        {key: 'userAccount', dataIndex: 'userAccount', title: '用户账号'},
+        {key: 'tenantCode', dataIndex: 'tenantCode', title: '租户码'},
+        {key: 'userRole', dataIndex: 'userRole', title: '用户角色'},
+        {key: 'createTime', dataIndex: 'createTime', title: '创建时间'},
+        {key: 'updateTime', dataIndex: 'updateTime', title: '更新时间'},
+        {key: 'operation', dataIndex: 'operation', title: '操作'},
       ],
       handleDelete,
       handleSearch
@@ -129,11 +138,12 @@ export default defineComponent({
 </script>
 
 <style>
-.username{
+.username {
   color: #42b983;
   font-weight: bold;
 }
-.noname{
+
+.noname {
   color: #999999;
   font-weight: bold;
 }

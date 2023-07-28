@@ -4,11 +4,13 @@
 
 #启动方式
 ## Project setup
+安装依赖
 ```
 npm install
 ```
 
 ### Compiles and hot-reloads for development
+执行项目
 ```
 npm run serve
 ```
