@@ -2,19 +2,24 @@
 import router from "@/router";
 //修改项目环境
 // const baseUrl='http://10.174.178.176:8080/api'
-export const baseUrl ='http://localhost:8080/api'
+export const baseUrl =process.env.VUE_APP_API_HOST
+// export const baseUrl ='http://localhost:8080/api'
+
+
 import axios from 'axios'
 import {resetUserState} from "@/view/pageConfig";
 import {message} from "ant-design-vue";
+// import {SET_COOKIE} from "@/store/constant";
+// import storage from "@/store/store";
 //让ajax携带cookie
-axios.defaults.withCredentials = false
+axios.defaults.withCredentials = true
+
 const request = axios.create({
     baseURL: baseUrl,
     // withCredentials:false,
     timeout: 6000,
-    headers:{
-        "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
-    }
+    // headers:{"Content-Type": "application/json"}
+    headers:{"Content-Type": 'application/x-www-form-urlencoded'}
 })
 
 

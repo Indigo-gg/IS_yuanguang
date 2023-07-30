@@ -1,5 +1,6 @@
 // const {baseUrl} = require("@/api/config");
 module.exports = {
+    publicPath:'/',
     chainWebpack: config => {
         config
             .plugin('html')
@@ -17,9 +18,10 @@ module.exports = {
                 target: 'http://localhost:8080',
                 ws: false,
                 changeOrigin: true,
-                pathRewrite: {
-                    '^/api': ''
+                pathRewrite: { //重写路径 比如'/apis/aaa/ccc'重写为'/aaa/ccc'
+                    '^/api': '/api'
                 }
+
             },
         }
     }

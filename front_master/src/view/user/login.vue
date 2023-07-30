@@ -104,6 +104,7 @@ export default {
             console.log('返回的登录数据', res)
             if (res.data.code === 0) {
               storage.set(HAS_LOGIN, true)
+              // storage.set(SET_COOKIE,res.header[SET_COOKIE])
               user.name = res.data.data.username || 'null'
               user.id = res.data.data.id
               user.userInfo = res.data.data
