@@ -72,7 +72,7 @@
 
 <script>
 import router from "@/router";
-import {login, register} from '@/api/api'
+import {login} from '@/api/api'
 import {reactive, ref, onMounted} from "vue";
 import storage from "@/store/store";
 import {message} from "ant-design-vue";
@@ -115,6 +115,8 @@ export default {
               message.error('登录信息出错，请重新填写')
             }
 
+          }).catch(err=>{
+            console.log('登录失败',err)
           }).finally(() => {
             loading.value = false
           })
@@ -123,18 +125,21 @@ export default {
     }
     //生命钩子
     onMounted(()=>{
-      const data = {
-        checkPassword: 1,
-        tenantCode: 1,
-        userAccount: '1234567',
-        userPassword: '111'
-      }
-      const test = () => {
-        register(data).then(res => {
-          console.log('注册的登录信息', res)
-        })
-      }
-      test()
+
+      //测试函数手动注册登录用户
+
+      // const data = {
+      //   checkPassword: '12345678',
+      //   tenantCode: "zuel",
+      //   userAccount: '12345678',
+      //   userPassword: '12345678'
+      // }
+      // const test = () => {
+      //   register(data).then(res => {
+      //     console.log('注册的登录信息', res)
+      //   })
+      // }
+      // test()
     })
     return {
       redirect: undefined,

@@ -92,6 +92,7 @@ import {user} from "@/view/pageConfig";
 import {HAS_LOGIN} from "@/store/constant";
 import storage from "@/store/store";
 import {message} from "ant-design-vue";
+import {logout} from "@/api/api";
 export default {
   name: "index",
   components: {
@@ -112,11 +113,19 @@ export default {
       message.info('退出登录成功');
     };
     const Logout = () => {
-      setTimeout(()=>{
-        info()
-        storage.remove(HAS_LOGIN)
-        router.go(-1)
-      },100)
+      logout().then(res=>{
+        if(res.data.code===0){
+          setTimeout(()=>{
+            info()
+            storage.remove(HAS_LOGIN)
+            router.go(-1)
+          },100)
+        }
+        else {
+          message.info('退出登录失败')
+        }
+      })
+
 
     }
 

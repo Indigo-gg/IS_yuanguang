@@ -1,14 +1,20 @@
 // export const baseUrl=process.env.VUE_APP_API_HOST
 import router from "@/router";
 //修改项目环境
-// const baseUrl='http://43.142.142.39:18080/api'
-const baseUrl ='http://localhost:8080/api'
+// const baseUrl='http://10.174.178.176:8080/api'
+export const baseUrl ='http://localhost:8080/api'
 import axios from 'axios'
 import {resetUserState} from "@/view/pageConfig";
 import {message} from "ant-design-vue";
+//让ajax携带cookie
+axios.defaults.withCredentials = false
 const request = axios.create({
     baseURL: baseUrl,
+    // withCredentials:false,
     timeout: 6000,
+    headers:{
+        "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
+    }
 })
 
 
@@ -17,12 +23,13 @@ function post(data, url) {
         url: url,
         method: 'post',
         data,
-        transformRequest: [
-            function (data) {
-                // 将请求数据转换成功 formdata 接收格式
-                return JSON.stringify(data)
-            }
-        ],
+
+        // transformRequest: [
+        //     function (data) {
+        //         // 将请求数据转换成功 formdata 接收格式
+        //         return JSON.stringify(data)
+        //     }
+        // ],
     })
 
 }

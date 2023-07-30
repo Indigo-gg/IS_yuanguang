@@ -11,7 +11,7 @@ export function register(data) {
 }
 
 export function logout() {
-    return post({}, '/user/logout')
+    return get({}, '/user/logout')
 }
 
 export function deleteUser(id) {
