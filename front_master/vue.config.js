@@ -9,20 +9,20 @@ module.exports = {
                 return args
             })
     },
-    devServer: {
-        // development server port 8000
-        port: 9095,
-        // If you want to turn on the proxy, please remove the mockjs /src/main.jsL11
-        proxy: {
-            '/api': {
-                target: 'http://localhost:8080',
-                ws: false,
-                changeOrigin: true,
-                pathRewrite: { //重写路径 比如'/apis/aaa/ccc'重写为'/aaa/ccc'
-                    '^/api': '/api'
-                }
-
-            },
-        }
-    }
+    // devServer: {
+    //     // development server port 8000
+    //     port: 9095,
+    //     // If you want to turn on the proxy, please remove the mockjs /src/main.jsL11
+    //     proxy: {
+    //         '/api': {
+    //             target: 'http://localhost:8080',
+    //             ws: false,
+    //             changeOrigin: true,
+    //             pathRewrite: { //重写路径 比如'/apis/aaa/ccc'重写为'/aaa/ccc'
+    //                 '^/api': '/api'
+    //             }
+    //
+    //         },
+    //     }
+    // }
 }

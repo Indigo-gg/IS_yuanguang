@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
+// import {setMock} from "@/utils/mock/mock";
 import Antd from 'ant-design-vue';
 import './global.css'
 import 'animate.css';
@@ -13,6 +14,9 @@ const app=createApp(App)
 Object.keys(antIcons).forEach(key => {
     app.component(key, antIcons[key])
 })
+
+// 采用mock
+// setMock()
 // 添加到全局
 app.config.globalProperties.$antIcons = antIcons
 app.use(router)

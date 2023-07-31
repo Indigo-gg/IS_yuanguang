@@ -4,7 +4,6 @@
       <div class="logo" @click="collapseNav">
         <logo color="#000" bg-color="#ee6058"></logo>
       </div>
-
       <div class="right flex-row-space-around">
 
         <div class="user">
@@ -83,7 +82,7 @@
 
 <script>
 import router from "../router";
-import {reactive, toRefs} from "vue";
+import {onMounted, reactive, toRefs} from "vue";
 import {route,app} from "@/view/pageConfig";
 import { ImportOutlined} from '@ant-design/icons-vue'
 
@@ -92,7 +91,7 @@ import {user} from "@/view/pageConfig";
 import {HAS_LOGIN} from "@/store/constant";
 import storage from "@/store/store";
 import {message} from "ant-design-vue";
-import {logout} from "@/api/api";
+import {logout, myInfo} from "@/api/api";
 export default {
   name: "index",
   components: {
@@ -137,6 +136,14 @@ export default {
     const collapseNav = () => {
       state.collapsed = !state.collapsed
     }
+
+    onMounted(()=>{
+      myInfo().then(res=>{
+        if(res.data.code!==0){
+          user.removeLoginState()
+        }
+      })
+    })
 
 
     return {

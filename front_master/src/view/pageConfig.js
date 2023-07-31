@@ -25,7 +25,11 @@ export const user={
     name:'User',
     phone:'123456',
     id:undefined,
-    userInfo:undefined
+    userInfo:undefined,
+    removeLoginState:()=>{
+        storage.remove(HAS_LOGIN)
+        router.go(0)
+    }
 }
 
 export const userAvatar=[

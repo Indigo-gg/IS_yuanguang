@@ -14,8 +14,8 @@ export function logout() {
     return get({}, '/user/logout')
 }
 
-export function deleteUser(id) {
-    return post({id:id}, '/user/delete')
+export function deleteUser(data) {
+    return get(data, '/user/delete')
 }
 
 export function updateUser(data) {
