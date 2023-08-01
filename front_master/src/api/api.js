@@ -19,7 +19,7 @@ export function deleteUser(data) {
 }
 
 export function updateUser(data) {
-    return post(data, '/user/delete')
+    return post(data, '/user/update')
 }
 
 export function myInfo() {

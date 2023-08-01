@@ -10,7 +10,7 @@
     <a-table :loading="loading" :columns="columns" :dataSource="dataSource" :pagination="pagination">
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'avatarUrl'">
-          <a-avatar :src="record.avatarUrl||getAvatar(record.id)"/>
+          <a-avatar :src="record.avatarUrl||getAvatar(record)"/>
         </template>
         <template v-else-if="column.key === 'createTime'">
           {{ DateToString(record.createTime) }}
@@ -33,7 +33,7 @@
 
 
           >
-<!--            @confirm="() => handleDelete(record.id)"-->
+            <!--            @confirm="() => handleDelete(record.id)"-->
 
             <a-button type="link" danger>删除用户</a-button>
           </a-popconfirm>
@@ -43,33 +43,46 @@
     </a-table>
   </div>
   <div>
-    <a-drawer  :width="200" title="更新用户信息" :placement="updateParams.updatePlacement"  v-model:visible="updateOpen" @close="updateParams.onClose">
+    <a-drawer :width="500" title="更新用户信息" :placement="updateParams.updatePlacement" v-model:visible="updateOpen"
+              @close="updateParams.onClose">
       <template #extra>
         <a-button style="margin-right: 8px" @click="updateParams.onClose">取消</a-button>
         <a-button type="primary" @click="updateParams.updateInfo">更新</a-button>
       </template>
       <a-form class="user-form">
-        <a-form-item label="Avatar URL">
-          <a-input v-model="user.avatarUrl" />
+        <a-form-item label="用户头像">
+          <a-avatar :src="user.avatarUrl"></a-avatar>
+          <a-space>
+            <a-tag color="red"> ID:{{ user.id }}</a-tag>
+          </a-space>
         </a-form-item>
-        <a-form-item label="Search Status">
+        <a-form-item label="用户名">
+          <a-input v-model:value="user.userName"/>
+        </a-form-item>
+        <a-form-item label="状态限制">
           <a-select v-model="user.searchStatus">
-            <a-select-option value="0">Not Searching</a-select-option>
-            <a-select-option value="1">Searching</a-select-option>
-            <a-select-option value="2">Advanced Searching</a-select-option>
+            <a-select-option value="0">
+              <a-tag color="pink">
+                0
+              </a-tag>
+            </a-select-option>
+            <a-select-option value="1">
+              <a-tag color="pink">
+                1
+              </a-tag>
+            </a-select-option>
+            <a-select-option value="2">
+              <a-tag color="pink">
+                2
+              </a-tag>
+            </a-select-option>
           </a-select>
         </a-form-item>
-        <a-form-item label="Tenant Code">
-          <a-input v-model="user.tenantCode" />
+        <a-form-item label="租户码">
+          <a-input v-model:value="user.tenantCode"/>
         </a-form-item>
-        <a-form-item label="User Account">
-          <a-input v-model="user.userAccount" />
-        </a-form-item>
-        <a-form-item label="User ID">
-          <a-input-number v-model="user.userId" />
-        </a-form-item>
-        <a-form-item label="User Name">
-          <a-input v-model="user.userName" />
+        <a-form-item label="用户账号">
+          <a-input v-model:value="user.userAccount"/>
         </a-form-item>
       </a-form>
     </a-drawer>
@@ -87,8 +100,8 @@ import {message} from "ant-design-vue";
 import {Drawer} from "ant-design-vue";
 
 export default defineComponent({
-  components:{
-    ADrawer:Drawer
+  components: {
+    ADrawer: Drawer
   },
   setup() {
     // let state={
@@ -104,33 +117,39 @@ export default defineComponent({
       searchStatus: 0,
       tenantCode: "",
       userAccount: "",
-      userId: 0,
+      id: 0,
       userName: "",
     });
-    let updateOpen=ref(false)
+    let updateOpen = ref(false)
 
-    const updateParams={
-      updatePlacement:'right',
-      onClose:function (){
-        updateOpen.value=false
+    const updateParams = {
+      updatePlacement: 'right',
+      onClose: function () {
+        updateOpen.value = false
       },
-      updateInfo:function (){
-        updateUser(user).then(res=>{
-          if(res.data.code===0){
+      updateInfo: function () {
+        console.log('更新的信息', user.value)
+        // if(!user.value){
+        updateUser(user.value).then(res => {
+          if (res.data.code === 0) {
             message.info('更新成功')
+          } else {
+            message.warn(res.data.message)
           }
         })
+        // }
+
       },
     }
-    const editUser= (userInfo)=>{
-      user.value.avatarUrl   =userInfo.avatarUrl
-      user.value.searchStatus=userInfo.searchStatus
-      user.value.tenantCode =userInfo.tenantCode
-      user.value.userAccount=userInfo.userAccount
-      user.value.userId     =userInfo.userId
-      user.value.userName   =userInfo.userName
-      updateOpen.value=true
-      console.log('编辑用户信息',updateOpen.value,user.value)
+    const editUser = (userInfo) => {
+      user.value.avatarUrl = userInfo.avatarUrl
+      user.value.searchStatus = userInfo.searchStatus
+      user.value.tenantCode = userInfo.tenantCode
+      user.value.userAccount = userInfo.userAccount
+      user.value.id = userInfo.id
+      user.value.userName = userInfo.userName
+      updateOpen.value = true
+      console.log('编辑用户信息', updateOpen.value, user.value)
     }
     let searchValue = ref(undefined)
     let loading = ref(true)
@@ -138,7 +157,7 @@ export default defineComponent({
     function fetchData() {
       getUserList(requestParam).then((response) => {
         // loading.value=true
-        console.log('用户列表',response)
+        // console.log('用户列表',response)
         dataSource.value = response.data.data.records;
       }).catch(err => {
         console.log('userErr', err)
@@ -146,13 +165,14 @@ export default defineComponent({
         // loading.value=false
         setTimeout(() => {
           loading.value = false
-          console.log('dataSource', dataSource)
+          // console.log('dataSource', dataSource)
         }, 100)
       })
     }
 
-    function getAvatar(id) {
-      return userAvatar[id % userAvatar.length]
+    function getAvatar(record) {
+      record.avatarUrl = userAvatar[record.id % userAvatar.length]
+      return userAvatar[record.id % userAvatar.length]
     }
 
     function handleSearch() {
@@ -167,7 +187,7 @@ export default defineComponent({
 
 
     function handleDelete(id) {
-      deleteUser({userId:id}).then(() => {
+      deleteUser({userId: id}).then(() => {
         message.success('删除用户成功！')
         fetchData();
       });
