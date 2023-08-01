@@ -9,6 +9,7 @@ import 'ant-design-vue/dist/antd.css';
 import './permission'
 import './plugins'
 import * as antIcons from "@ant-design/icons-vue";
+
 const app=createApp(App)
 //全局注册图标
 Object.keys(antIcons).forEach(key => {
