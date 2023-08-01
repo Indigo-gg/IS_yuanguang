@@ -8,6 +8,9 @@
     <!--    />-->
     <!--    <a-divider />-->
     <a-table :loading="loading" :columns="columns" :dataSource="dataSource" :pagination="pagination">
+      <template #customFilterIcon="{ filtered }">
+        <search-outlined :style="{ color: filtered ? '#108ee9' : undefined }" />
+      </template>
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'avatarUrl'">
           <a-avatar :src="record.avatarUrl||getAvatar(record)"/>
@@ -18,8 +21,13 @@
         <template v-else-if="column.key === 'updateTime'">
           {{ DateToString(record.updateTime) }}
         </template>
+        <template v-else-if="column.key === 'userRole'">
+          <a-tag color="blue" v-if="record.userRole===1">管理员</a-tag>
+          <a-tag color="yellow" v-else-if="record.userRole===0">用户</a-tag>
+
+        </template>
         <template v-else-if="column.key === 'username'">
-          <span v-if="record.username" class="username">{{ record.username }}</span>
+          <span v-if="record.username" style="color: #1890ff" class="username">{{ record.username }}</span>
           <span v-else class="noname">未命名用户</span>
 
         </template>
@@ -40,6 +48,35 @@
           <a-button type="link" @click="editUser(record)">编辑用户</a-button>
         </template>
       </template>
+      <template
+          #customFilterDropdown="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }"
+      >
+        <div style="padding: 8px">
+          <a-input
+              ref="searchInput"
+              :placeholder="`搜索 ${column.dataIndex}`"
+              v-model:value="searchValue"
+              style="width: 188px; margin-bottom: 8px; display: block"
+              @change="e => setSelectedKeys(e.target.value ? [e.target.value] : [])"
+              @pressEnter="handleSearch(selectedKeys, confirm, column.dataIndex)"
+          />
+          <a-button
+              type="primary"
+              size="small"
+              style="width: 90px; margin-right: 8px"
+              @click="handleSearch(selectedKeys, confirm, column.dataIndex)"
+          >
+            <template #icon>
+              <SearchOutlined/>
+            </template>
+            搜索
+          </a-button>
+          <a-button size="small" style="width: 90px" @click="handleReset(clearFilters)">
+            取消
+          </a-button>
+        </div>
+      </template>
+
     </a-table>
   </div>
   <div>
@@ -95,13 +132,15 @@
 import {defineComponent, onMounted, ref} from 'vue';
 import {deleteUser, getUserList, searchUser, updateUser} from '@/api/api';
 import {DateToString} from "@/utils/date";
+import {SearchOutlined} from '@ant-design/icons-vue'
 import {userAvatar} from "@/view/pageConfig";
 import {message} from "ant-design-vue";
 import {Drawer} from "ant-design-vue";
 
 export default defineComponent({
   components: {
-    ADrawer: Drawer
+    ADrawer: Drawer,
+    SearchOutlined
   },
   setup() {
     // let state={
@@ -112,12 +151,13 @@ export default defineComponent({
       current: 1,
       size: 50
     }
+    const searchInput = ref();
     const user = ref({
       avatarUrl: "",
       searchStatus: 0,
       tenantCode: "",
       userAccount: "",
-      id: 0,
+      userId: 0,
       userName: "",
     });
     let updateOpen = ref(false)
@@ -128,11 +168,12 @@ export default defineComponent({
         updateOpen.value = false
       },
       updateInfo: function () {
-        console.log('更新的信息', user.value)
+        // console.log('更新的信息', user.value)
         // if(!user.value){
         updateUser(user.value).then(res => {
           if (res.data.code === 0) {
             message.info('更新成功')
+            updateOpen.value = false
           } else {
             message.warn(res.data.message)
           }
@@ -146,7 +187,7 @@ export default defineComponent({
       user.value.searchStatus = userInfo.searchStatus
       user.value.tenantCode = userInfo.tenantCode
       user.value.userAccount = userInfo.userAccount
-      user.value.id = userInfo.id
+      user.value.userId = userInfo.id
       user.value.userName = userInfo.userName
       updateOpen.value = true
       console.log('编辑用户信息', updateOpen.value, user.value)
@@ -175,15 +216,26 @@ export default defineComponent({
       return userAvatar[record.id % userAvatar.length]
     }
 
-    function handleSearch() {
+    function handleSearch(selectedKeys, confirm) {
+      console.log('搜索参数', selectedKeys, confirm)
       if (searchValue.value) {
-        searchUser(searchValue).then((response) => {
-          dataSource.value = response.data.data;
+        searchUser({
+          ...requestParam,
+          username:searchValue.value
+        }).then((response) => {
+          dataSource.value = response.data.data.records
         });
       } else {
         fetchData();
       }
     }
+
+    const handleReset = clearFilters => {
+      clearFilters({
+        confirm: true,
+      });
+      searchValue.value = '';
+    };
 
 
     function handleDelete(id) {
@@ -219,7 +271,19 @@ export default defineComponent({
       columns: [
         {key: 'id', dataIndex: 'id', title: 'ID',},
         {key: 'avatarUrl', dataIndex: 'avatarUrl', title: '头像'},
-        {key: 'userName', dataIndex: 'userName', title: '用户名'},
+        {
+          key: 'userName',
+          dataIndex: 'userName',
+          title: '用户名',
+          customFilterDropdown: true,
+          onFilterDropdownOpenChange: visible => {
+            if (visible) {
+              setTimeout(() => {
+                searchValue.value.focus();
+              }, 100);
+            }
+          },
+        },
         {key: 'userAccount', dataIndex: 'userAccount', title: '用户账号'},
         {key: 'tenantCode', dataIndex: 'tenantCode', title: '租户码'},
         {key: 'userRole', dataIndex: 'userRole', title: '用户角色'},
@@ -231,7 +295,9 @@ export default defineComponent({
       handleSearch,
       updateParams,
       updateOpen,
-      editUser
+      editUser,
+      searchInput,
+      handleReset,
     };
 
   },
