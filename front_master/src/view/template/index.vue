@@ -15,29 +15,63 @@
         </template>
         <template v-else-if="column.dataIndex==='color'">
           <a-tag :color="record.color">
-                <span style="color: #999999">{{record.color}}</span>
+            <span style="color: #999999">{{ record.color }}</span>
           </a-tag>
         </template>
         <template v-else-if="column.dataIndex==='isPublic'">
-         <a-tag color="red" v-if="record.isPublic===1">
-           已公开
-         </a-tag>
+          <a-tag color="red" v-if="record.isPublic===1">
+            已公开
+          </a-tag>
           <a-tag color="blue" v-else>
             未公开
           </a-tag>
         </template>
         <template v-else-if="column.dataIndex==='style'">
-         <span :style="{fontSize:record.style}">{{record.style}}</span>
+          <span :style="{fontSize:record.style}">{{ record.style }}</span>
+        </template>
+        <template v-else-if="column.dataIndex==='button'">
+          <a-button :style="{fontSize:record.button}" size="small" shape="round" v-if="record.button===0"
+                    type="primary">
+            {{ getButtonText(record.button) }}
+
+            <template #icon>
+              <SearchOutlined></SearchOutlined>
+            </template>
+          </a-button>
+          <a-button :style="{fontSize:record.button}" size="small" v-else-if="record.button===1" type="primary">
+            {{ getButtonText(record.button) }}
+            <template #icon>
+              <SearchOutlined></SearchOutlined>
+
+            </template>
+          </a-button>
+          <a-button :style="{fontSize:record.button}" size="small" v-else-if="record.button===2" type="dashed">
+            {{ getButtonText(record.button) }}
+            <template #icon>
+              <SearchOutlined></SearchOutlined>
+
+            </template>
+          </a-button>
+          <a-button :style="{fontSize:record.button}" size="small" v-else>未知按钮</a-button>
+
         </template>
         <template v-else-if="column.dataIndex === 'updateTime'">
           {{ DateToString(record.updateTime) }}
         </template>
 
       </template>
-      <template #action>
+      <template #action="{record}">
         <div class="flex-row-space-around">
-          <a-button type="link" style="color: red">删除</a-button>
-          <a-button type="link">编辑</a-button>
+          <a-popconfirm
+              title="请确认删除此模板?"
+              placement="topRight"
+              ok-text="我确认"
+              cancel-text="取消"
+              @confirm="() =>deleteTemp(record.id)"
+          >
+            <a-button type="link" danger>删除模板</a-button>
+          </a-popconfirm>
+          <a-button type="link" @click="editTemp(record)">编辑</a-button>
         </div>
 
       </template>
@@ -94,7 +128,8 @@
           >
             <a-select-option v-for="option in TMap.button" :value="option.value" :key="option.value"
                              style="text-align: center">
-              <a-button :style="{fontSize:option.value}" size="small" shape="round" v-if="option.value===0" type="primary">
+              <a-button :style="{fontSize:option.value}" size="small" shape="round" v-if="option.value===0"
+                        type="primary">
                 {{ option.text }}
 
                 <template #icon>
@@ -122,11 +157,11 @@
         </a-form-item>
       </a-form>
       <div class="bottom">
-        {{formData.userAccount}}最后一次更新于
+        {{ formData.userAccount }}最后一次更新于
         <span v-if="formData.updateTime" v-text="DateToString(formData.updateTime)">
         </span>
         <span v-else>
-          {{new Date().toLocaleDateString()}}
+          {{ new Date().toLocaleDateString() }}
         </span>
       </div>
     </a-modal>
@@ -257,23 +292,27 @@ export default {
           .validate()
           .then(() => {
             confirmLoading.value = true; // 开启确定按钮的loading状态
-            const payload = {...formData.value};
+            const payload = {
+              ...formData.value,
+              templateId: formData.value.id
+            };
             if (payload.id) {
-              updateTemplate(payload).then(res=>{
-                if(res.data.code===0){
-                  formData.value.id=undefined
+              updateTemplate(payload).then(res => {
+                if (res.data.code === 0) {
+                  formData.value.id = undefined
                   getListTemp();
                 }
               })
             } else {
-              addTemplate(payload).then(res=>{
-                if(res.data.code===0){
+              addTemplate(payload).then(res => {
+                if (res.data.code === 0) {
                   message.success('新增成功')
-                  confirmLoading.value=false
+                  confirmLoading.value = false
                   getListTemp();
                 }
               })
             }
+            visible.value = false
           })
           .catch(() => {
             // 验证不通过时的提示
@@ -282,14 +321,15 @@ export default {
     };
 
     // 删除模板
-    const deleteTemp = (record) => {
+    const deleteTemp = (id) => {
 
       deleteTemplate({
-        templateId: record.id
+        templateId: id
       }).then(res => {
-        if (res.data.code === 0)
+        if (res.data.code === 0) {
           message.info('删除模板成功')
-        else
+          getListTemp()
+        } else
           message.error('删除模板失败')
       })
 
@@ -318,8 +358,11 @@ export default {
       deleteTemp,
       handlePageChange,
       getColByName, TMap: template.map,
-      DateToString:(date)=>{
+      DateToString: (date) => {
         return DateToString(date)
+      },
+      getButtonText: (value) => {
+        return template.map.buttonText(value)
       }
     };
   }

@@ -37,7 +37,7 @@
               placement="topRight"
               ok-text="我确认"
               cancel-text="取消"
-              @confirm="() =>editUser(record)"
+              @confirm="() =>delUser(record.id)"
 
 
           >
@@ -182,6 +182,14 @@ export default defineComponent({
 
       },
     }
+
+    const delUser=(id)=>{
+      deleteUser(id).then(res=>{
+        if(res.data.code===0){
+          message.success('删除用户成功！')
+        }
+      })
+    }
     const editUser = (userInfo) => {
       user.value.avatarUrl = userInfo.avatarUrl
       user.value.searchStatus = userInfo.searchStatus
@@ -298,6 +306,7 @@ export default defineComponent({
       editUser,
       searchInput,
       handleReset,
+      delUser
     };
 
   },

@@ -86,6 +86,11 @@ export const template = {
                 value:2
             }
         ],
+        buttonText:(value)=>{
+            return template.map.button.find(i=>{
+                return i.value===value
+            }).text
+        },
         color:[
             {
                 text:'黄色',
