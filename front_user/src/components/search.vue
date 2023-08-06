@@ -16,6 +16,7 @@
 
 <script>
 import axios from 'axios';
+import {esSearch} from "@/api/search";
 
 export default {
   data() {
@@ -39,8 +40,11 @@ export default {
   },
   methods: {
     autoSuggest() {
-      axios.get(`/api/es/search?keyword=${this.keyword}&page=${this.currentPage}&size=${this.pageSize}`)
-          .then(response => {
+      esSearch({
+        keyword:this.keyword,
+        page:this.currentPage,
+        size:this.pageSize
+      }).then(response => {
             this.suggestions = response.data;
           })
           .catch(error => {
@@ -52,7 +56,12 @@ export default {
       this.showSuggestions = false;
     },
     search() {
-      axios.get(`/api/es/search?keyword=${this.keyword}&page=${this.currentPage}&size=${this.pageSize}`)
+      // axios.get(`/api/es/search?keyword=${this.keyword}&page=${this.currentPage}&size=${this.pageSize}`)
+      esSearch({
+        keyword:this.keyword,
+        page:this.currentPage,
+        size:this.pageSize
+      })
           .then(response => {
             this.results = response.data;
             this.currentPage = 1;

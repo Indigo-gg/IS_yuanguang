@@ -138,6 +138,8 @@ export default {
     }
 
     onMounted(()=>{
+      let a=false
+      if(a)
       myInfo().then(res=>{
         if(res.data.code!==0){
           user.removeLoginState()

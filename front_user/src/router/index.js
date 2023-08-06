@@ -8,6 +8,16 @@ const routes = [
     component: HomeView
   },
   {
+    path:'/login',
+    name:'login',
+    component:()=>import('@/views/user/login'),
+  },
+  {
+    path:'/register',
+    name:'register',
+    component:()=>import('@/views/user/register'),
+  },
+  {
     path: '/about',
     name: 'about',
     // route level code-splitting

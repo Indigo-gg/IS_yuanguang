@@ -13,7 +13,6 @@ router.beforeEach(to=>{
         return true
     // 如果未登录
     if(!checkLogin()){
-        storage.remove(HAS_LOGIN)
         return {name:'login'}
     }
 

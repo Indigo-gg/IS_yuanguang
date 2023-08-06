@@ -40,8 +40,9 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import {ref} from 'vue';
 import axios from 'axios';
+import {search} from "@/api/search";
 
 export default {
   data() {
@@ -56,14 +57,12 @@ export default {
   methods: {
     async handleSearch() {
       try {
-        const response = await axios.get('/api/search', {
-          params: {
-            time: this.selectedTime,
-            region: this.selectedRegion,
-            format: this.selectedFormat,
-            query: this.searchQuery,
-          },
-        });
+        const response = await search({
+          time: this.selectedTime,
+          region: this.selectedRegion,
+          format: this.selectedFormat,
+          query: this.searchQuery,
+        })
         this.searchResults = response.data;
       } catch (error) {
         console.error(error);

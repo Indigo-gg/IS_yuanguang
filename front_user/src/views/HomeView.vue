@@ -1,10 +1,6 @@
 <template>
-  <div class="home">
-<!--    <img alt="Vue logo" src="../assets/logo.png">-->
-    <search></search>
-    <advanced-search></advanced-search>
-
-  </div>
+  <search></search>
+  <advanced-search></advanced-search>
 </template>
 
 <script>
