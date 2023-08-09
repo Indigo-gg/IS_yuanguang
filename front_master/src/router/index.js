@@ -7,19 +7,19 @@ const router = createRouter({
             path: '/',
             name: 'home',
             component: () => import('@/view/index'),
-            redirect: '/dataIndex',
+            redirect: '/contentSource',
             //子路由
             children: [
-                {
-                    path:'/dataIndex',
-                    name:'dataIndex',
-                    meta:{
-                        icon:'CalendarOutlined',
-                      name:'数据索引管理',
-                        isShow:true
-                    },
-                    component: () => import('@/view/dataIndex/index.vue')
-                },
+                // {
+                //     path:'/dataIndex',
+                //     name:'dataIndex',
+                //     meta:{
+                //         icon:'CalendarOutlined',
+                //       name:'数据索引管理',
+                //         isShow:true
+                //     },
+                //     component: () => import('@/view/dataIndex/index.vue')
+                // },
                 {
                     path:'/contentSource',
                     name:'contentSource',

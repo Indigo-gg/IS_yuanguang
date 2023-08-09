@@ -3,7 +3,6 @@ import storage from "@/store/store";
 import {HAS_LOGIN} from "@/store/constant";
 
 function checkLogin(){
-
     return storage.get(HAS_LOGIN)
 }
 
