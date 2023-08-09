@@ -138,7 +138,7 @@ export default {
     }
 
     onMounted(()=>{
-      let a=false
+      let a=true
       if(a)
       myInfo().then(res=>{
         if(res.data.code!==0){

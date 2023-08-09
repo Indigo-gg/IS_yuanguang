@@ -15,7 +15,7 @@ module.exports = {
     //     // If you want to turn on the proxy, please remove the mockjs /src/main.jsL11
     //     proxy: {
     //         '/api': {
-    //             target: 'http://localhost:8080',
+    //             target: 'http://192.168.3.82:8080',
     //             ws: false,
     //             changeOrigin: true,
     //             pathRewrite: { //重写路径 比如'/apis/aaa/ccc'重写为'/aaa/ccc'
