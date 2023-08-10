@@ -1,15 +1,27 @@
 <template>
   <div class="head">
-    <a-avatar style="color: #f56a00; background-color: #fde3cf">{{
-        user.getUserInfo().userName.substring(0, 1)
-      }}
-    </a-avatar>
+    <div class="avatar">
+      <a-dropdown :trigger="['contextmenu']">
+        <div>
+          <a-avatar style="color: #f56a00; background-color: #fde3cf">{{ user.getUserInfo().userName.substring(0, 1) }}</a-avatar>
+        </div>
+        <template #overlay>
+          <div style="margin: 2px">
+            <a-button shape="round" @click="handleLogout">
+              退出登录
+              <template #icon>
+                <import-outlined/>
+              </template>
+            </a-button>
 
-    <a-dropdown v-model:visible="dropdownVisible" @visible-change="handleDropdownVisibleChange">
-      <a-menu slot="overlay">
-        <a-menu-item key="logout" @click="handleLogout">退出登录</a-menu-item>
-      </a-menu>
-    </a-dropdown>
+          </div>
+          <!--            <a-menu>-->
+          <!--              <a-menu-item key="1"><a-button @click="loginout">退出登录</a-button></a-menu-item>-->
+          <!--            </a-menu>-->
+        </template>
+      </a-dropdown>
+
+    </div>
 
   </div>
   <search></search>
@@ -39,12 +51,6 @@ export default {
 
     let  dropdownVisible=ref(false)
 
-    function handleAvatarClick() {
-      dropdownVisible.value = true;
-    }
-    function handleDropdownVisibleChange(visible) {
-      dropdownVisible.value = visible;
-    }
     function handleLogout() {
       logout().then(res=>{
         if(res.data.code===0){
@@ -81,8 +87,18 @@ export default {
       user,
       dropdownVisible,
       handleLogout,
-      handleDropdownVisibleChange
     }
   }
 }
 </script>
+
+<style scoped>
+.head{
+  display: flex;
+  justify-content: flex-end;
+}
+.avatar{
+  padding: 20px;
+  align-self: flex-end;
+}
+</style>

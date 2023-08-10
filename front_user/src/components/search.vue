@@ -14,8 +14,10 @@
     </div>
 
     <ul v-if="results.length" class="results-list">
-      <li v-for="(result, index) in paginatedResults" :key="index" class="result-item"
-          v-html="highlightText(result)"></li>
+      <li v-for="(result, index) in results" :key="index" class="result-item">
+        <a-avatar size="large" :src="result.imgUrl"></a-avatar>
+
+        {{result.title + result.content}}</li>
     </ul>
     <div class="pagination" v-if="results.length>0">
       <button @click="previousPage" class="pagination-button" :disabled="currentPage === 1">上一页</button>
@@ -26,9 +28,8 @@
 </template>
 
 <script>
-import axios from 'axios';
-import {esSearch} from "@/api/search";
-import {reactive, ref} from "vue";
+import {esSearch, searchFileByTenant} from "@/api/search";
+import {onMounted, reactive, ref} from "vue";
 import {message} from "ant-design-vue";
 
 export default {
@@ -40,16 +41,18 @@ export default {
     let currentPage = ref()
     let showSuggestions = ref(false)
     const requestParams = reactive({
-      currentPage: 1,
-      pageSize: 10
+      page: 1,
+      size: 10
     })
     const totalPages = () => {
-      return Math.ceil(results.value.length / requestParams.pageSize);
+      return Math.ceil(results.value.length / requestParams.size);
     }
     const paginatedResults = () => {
-      const startIndex = (requestParams.currentPage - 1) * requestParams.pageSize;
-      const endIndex = startIndex + requestParams.pageSize;
-      return results.value.slice(startIndex, endIndex);
+      const startIndex = (requestParams.page - 1) * requestParams.size;
+      const endIndex = startIndex + requestParams.size;
+      let data=results.value.slice(startIndex, endIndex);
+      console.log('处理之后的数据',data)
+      return data
     }
 
     const autoSuggest = () => {
@@ -59,10 +62,10 @@ export default {
           flag=true
           esSearch({
             keyword: keyword.value,
-            page: requestParams.currentPage,
-            size: requestParams.pageSize
+            page: requestParams.page,
+            size: requestParams.size
           }).then(response => {
-            suggestions.value = response.data.data;
+            suggestions.value = response.data.data.content;
             flag=false
           })
               .catch(error => {
@@ -82,15 +85,20 @@ export default {
       if(!keyword||keyword.value===''){
         message.error('输入内容不能为空')
       }
+      // esSearch({
+      //   keyword: keyword.value,
+      //   page: requestParams.currentPage,
+      //   size: requestParams.pageSize
+      // })
       esSearch({
         keyword: keyword.value,
-        page: requestParams.currentPage,
-        size: requestParams.pageSize
+        page: requestParams.page,
+        size: requestParams.size
       })
           .then(response => {
             console.log('返回的搜索数据',response.data)
-            results.value = response.data;
-            requestParams.currentPage = 1;
+            results.value = response.data.data.content;
+            requestParams.page = 1;
           })
           .catch(error => {
             console.error(error);
@@ -114,6 +122,15 @@ export default {
         currentPage.value++;
       }
     }
+
+    onMounted(()=>{
+      // searchFileByTenant({
+      //   keyword:'zuel',
+      //   ...requestParams
+      // }).then(r=>{
+      //   console.log('rssult',r)
+      // })
+    })
 
 
     return {
