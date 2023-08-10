@@ -2,7 +2,7 @@
 <template>
   <div class="search-container">
     <div class="search-input"><input type="text" v-model="keyword" placeholder="请输入" @input="autoSuggest" />
-      <ul v-if="showSuggestions">
+      <ul v-if="showSuggestions" class="suggestions-list">
         <li v-for="suggestion in suggestions" :key="suggestion" @click="selectSuggestion(suggestion)">{{ suggestion }}</li>
       </ul>
     </div>
