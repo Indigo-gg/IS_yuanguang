@@ -2,7 +2,7 @@
   <div class="login-container">
     <a-row class="login-main">
       <a-col :span="12" class="login-carousel">
-        <img :src="require('@/assets/carouse_login.png')"/>
+        <img :src="require('@/assets/login.png')"/>
       </a-col>
       <a-col :span="12" class="login-form-container">
         <div class="title">{{ name }}</div>
@@ -168,7 +168,7 @@ export default {
 <style lang='less' scoped>
 .login-container {
   height: 100vh;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.3)), url("../../assets/carouse.png") no-repeat;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.3)), url("../../assets/login_bg.png") no-repeat;
   background-size: cover;
 
   .login-main {

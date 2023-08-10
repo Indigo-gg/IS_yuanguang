@@ -1,51 +1,70 @@
 <template>
   <div class="body">
     <!-- 任务表单 -->
-    <a-form :model="form" :label-width="120" @submit.prevent="handleSubmit">
-      <a-form-item label="任务名称">
-        <a-input v-model:value="form.name"></a-input>
-      </a-form-item>
+    <div class="task">
+      <h3 style="text-align: center">设置爬虫任务</h3>
+      <a-form :model="form" :label-width="120" @submit.prevent="handleSubmit">
+        <a-form-item label="任务名称">
+          <a-input v-model:value="form.name"></a-input>
+        </a-form-item>
 
-      <a-form-item label="任务目标">
-        <a-input v-model:value="form.target" type="textarea"></a-input>
-      </a-form-item>
+        <a-form-item label="任务目标">
+          <a-input v-model:value="form.target" type="textarea"></a-input>
+        </a-form-item>
 
-      <a-form-item>
-        <div style="text-align: center">
-          <a-button type="primary" @click="handleSubmit">提交</a-button>
+        <a-form-item>
+          <div style="text-align: center">
+            <a-button type="primary" @click="handleSubmit">提交</a-button>
 
-        </div>
-      </a-form-item>
-    </a-form>
+          </div>
+        </a-form-item>
+      </a-form>
 
-    <!-- 查询按钮 -->
-    <div class="center">
-      <a-button @click="getAll">所有任务</a-button>
-      <a-button @click="getRunning">运行中任务</a-button>
-      <a-button @click="getWaiting">等待中任务</a-button>
     </div>
 
-    <!-- 任务列表 -->
-    <a-table :columns="columns" :dataSource="list" rowKey="id" >
-      <template #bodyCell="{ column, record }">
-        <template v-if="column.dataIndex === 'action'">
-          <a-button size="small"
-                    v-if="record.property==='running'"
-                    @click="handlePause(record)">暂停
-          </a-button>
+    <div class="data">
+      <div class="center">
+        <a-button @click="getAll">所有任务</a-button>
+        <a-button @click="getRunning">运行中任务</a-button>
+        <a-button @click="getWaiting">等待中任务</a-button>
+      </div>
 
-          <a-button size="small"
-                    v-else-if="record.property==='pause'"
-                    @click="handleResume(record)">恢复
-          </a-button>
+      <!-- 任务列表 -->
+      <a-table :columns="columns" :dataSource="list" rowKey="index" >
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.dataIndex === 'action'">
+            <a-button size="small"
+                      v-if="record.property==='running'"
+                      @click="handlePause(record)">暂停
+            </a-button>
 
-          <a-button size="small" type="danger"
-                    @click="handleCancel(record)">取消
-          </a-button>
+            <a-button size="small"
+                      v-else-if="record.property==='paused'"
+                      @click="handleResume(record)">恢复
+            </a-button>
+
+            <a-button size="small" type="danger"
+                      @click="handleCancel(record)">取消
+            </a-button>
+          </template>
+          <template v-if="column.dataIndex === 'property'">
+            <a-tag color="green" v-if="record.property==='running'">运行中</a-tag>
+            <a-tag color="blue" v-if="record.property==='paused'">已暂停</a-tag>
+            <a-tag color="yellow" v-if="record.property==='waiting'">等待中</a-tag>
+
+
+
+          </template>
+          <template v-if="column.dataIndex === 'total'">
+            <a-tag color="green" >{{record.success}}</a-tag>/
+            <a-tag color="blue">{{record.total}}</a-tag>
+
+          </template>
         </template>
-      </template>
+      </a-table>
+    </div>
+    <!-- 查询按钮 -->
 
-    </a-table>
   </div>
 </template>
 
@@ -60,17 +79,17 @@ import {
   getWaitingTasks
 } from '@/api/scrawl.js';
 import {onMounted, reactive, ref} from "vue";
-
+import {message} from "ant-design-vue";
 export default {
 
   setup() {
 
     const form = reactive({
-      deep: 1,
+      deep: 3,
       name: "爬虫任务" + new Date().getDay(),
       target: "https://news.ifeng.com/c/8S1oKnHt6Zy"
     })
-    let list = ref([])
+    const list = ref([])
 
     function resetForm(){
       form.name=''
@@ -78,49 +97,69 @@ export default {
     }
     function  handleSubmit() {
        addTask(form).then(()=>{
+         message.success('任务提交成功！')
          getAll();
          resetForm()
        })
     }
     function handlePause(row) {
-       pauseTask(row.id).then(()=>{
+       pauseTask({
+         index:row.index
+       }).then(()=>{
          getAll();
        })
     }
 
     function handleResume(row) {
-       resumeTask(row.id).then(()=>{
+       resumeTask({
+         index:row.index
+       }).then(()=>{
         getAll();
       })
     }
 
     function handleCancel(row) {
-       cancelTask(row.id).then(()=>{
+       cancelTask({
+         index:row.index
+       }).then(()=>{
          getAll();
        })
     }
 
+    function setData(res){
+      if(res.data.data.length>0&&res.data.code===0){
+        list.value=res.data.data
+      }else {
+        list.value=[]
+      }
+    }
+
     function getAll() {
-       getAllTasks(res=>{
-         list.value =res.data.data
-      });
+      // console.log('开始获取爬虫任务')
+
+      getAllTasks().then(res=>{
+         setData(res)
+          console.log('拿到的爬虫任务',res.data.data)
+      })
     }
 
     function getRunning() {
       getRunningTasks(res=>{
-        list.value =res.data
+        setData(res)
       });
     }
 
     function getWaiting() {
        getWaitingTasks(res=>{
-        list.value =res.data
+         setData(res)
       });
     }
 
 
 
     onMounted(()=>{
+      console.log('获取爬虫任务')
+
       getAll()
       // handleSubmit()
     })
@@ -165,7 +204,7 @@ export default {
         },
         {
           key: 5,
-          title: '总数',
+          title: '成功/总数',
           dataIndex: 'total',
         },
         {
@@ -173,7 +212,7 @@ export default {
           title: '操作',
           dataIndex: 'action',
           width: '10%',
-          slots: {customRender: 'action'},
+          // slots: {customRender: 'action'},
         },
       ]
     };
@@ -190,5 +229,14 @@ export default {
   display: flex;
   justify-content: space-around;
   margin: 10px;
+}
+.task{
+  padding: 10px;
+  background-color: #fafafa;
+}
+.data{
+  margin: 40px;
+  padding: 10px;
+  /*background-color: #fafafa;*/
 }
 </style>

@@ -10,6 +10,9 @@ export const user = {
     removeLoginState: () => {
         storage.remove(HAS_LOGIN)
         router.go(0)
+    },
+    getUserInfo:()=>{
+        return storage.get(USER_INFO)
     }
 }
 

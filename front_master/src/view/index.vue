@@ -10,7 +10,7 @@
 
           <a-dropdown :trigger="['contextmenu']">
             <div>
-              <a-avatar style="color: #f56a00; background-color: #fde3cf">{{ user.name.substring(0, 1) }}</a-avatar>
+              <a-avatar style="color: #f56a00; background-color: #fde3cf">{{ user.getUserInfo().userName.substring(0, 1) }}</a-avatar>
             </div>
             <template #overlay>
               <div style="margin: 2px">
@@ -122,7 +122,13 @@ export default {
         }
         else {
           message.info('退出登录失败')
+          storage.remove(HAS_LOGIN)
+          router.go(-1)
         }
+      }).catch(error=>{
+        message.info('退出登录失败'+error)
+        storage.remove(HAS_LOGIN)
+        router.go(-1)
       })
 
 
