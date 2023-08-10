@@ -1,9 +1,9 @@
 // export const baseUrl=process.env.VUE_APP_API_HOST
 import router from "@/router";
 //修改项目环境
-const baseUrl='http://192.168.3.120:8080/api'
+// const baseUrl='http://192.168.3.120:8080/api'
 // export const baseUrl =process.env.VUE_APP_API_HOST
-// export const baseUrl ='http://localhost:8080/api'
+export const baseUrl ='http://localhost:8080/api'
 
 
 import axios from 'axios'

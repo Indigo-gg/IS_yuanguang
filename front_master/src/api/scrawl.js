@@ -1,45 +1,41 @@
 // 引入封装的请求模块
-import { post, get } from '@/api/config';
+import { post } from '@/api/config';
 
 // 添加任务
-function addTask(taskInfo) {
-    return post(taskInfo, '/scrawl/add');
+function addTask(data) {
+    return post(data, '/spider/http');
 }
 
 // 暂停任务
-function pauseTask(taskId) {
-    return post({id: taskId}, '/scrawl/pause');
+function pauseTask(data) {
+    return post(data, '/spider/pause_task');
 }
 
 // 恢复任务
-function resumeTask(taskId) {
-    return post({id: taskId}, '/scrawl/resume');
+function resumeTask(data) {
+    return post(data, '/spider/resume_task');
 }
 
 // 取消任务
-function cancelTask(taskId) {
-    return post({id: taskId}, '/scrawl/cancel');
+function cancelTask(data) {
+    return post(data, '/spider/cancel_task');
 }
 
 // 获取所有任务
-function getAllTasks() {
-    return get('/scrawl/all');
+function getAllTasks(data) {
+    return post(data,'/spider/get_tasks');
 }
 
 // 获取运行中任务
-function getRunningTasks() {
-    return get('/scrawl/running');
+function getRunningTasks(data) {
+    return post(data,'/spider/get_running_tasks');
 }
 
 // 获取等待中任务
-function getWaitingTasks() {
-    return get('/scrawl/waiting');
+function getWaitingTasks(data) {
+    return post(data,'/spider/get_waiting_tasks');
 }
 
-// 获取请求头配置
-function getRequestHeaders() {
-    return get('/scrawl/headers');
-}
 
 export {
     addTask,
@@ -48,6 +44,5 @@ export {
     cancelTask,
     getAllTasks,
     getRunningTasks,
-    getWaitingTasks,
-    getRequestHeaders
+    getWaitingTasks
 }

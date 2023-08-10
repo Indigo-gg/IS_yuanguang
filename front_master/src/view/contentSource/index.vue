@@ -23,6 +23,15 @@
         <a-form-item label="内容" name="content" required>
           <a-input v-model:value="form.content"/>
         </a-form-item>
+        <a-form-item label="封面地址" name="imgUrl" required>
+          <a-input v-model:value="form.imgUrl"/>
+        </a-form-item>
+        <a-form-item label="类型" name="type" required>
+          <a-input v-model:value="form.type"/>
+        </a-form-item>
+        <a-form-item label="来源网址" name="website" required>
+          <a-input v-model:value="form.website"/>
+        </a-form-item>
         <!-- 其他表单项根据您的需求添加 -->
       </a-form>
     </a-modal>
@@ -30,8 +39,9 @@
 </template>
 
 <script>
-import {onMounted, reactive, ref} from "vue";
-import {deleteFile, findFileByTenant} from "@/api/result";
+import {onMounted, ref} from "vue";
+import {deleteFile, findFile} from "@/api/result";
+import {user} from '@/view/pageConfig'
 import {PlusOutlined} from "@ant-design/icons-vue";
 export default {
   name: "index",
@@ -39,7 +49,14 @@ export default {
     PlusOutlined
   },
   setup() {
-    const form = ref(null);
+    const form = ref({
+      title:'',
+      content: "",
+      imgUrl: "",
+      tenantCode: user.getUserInfo(),
+      type: "",
+      website: ""
+    });
     const documents = ref([
       // 根据接口返回的文档列表进行初始化
     ]);
@@ -50,9 +67,6 @@ export default {
       page: 1,
       size: 100
     }
-    let user=reactive({
-      tenant:'zuel'
-    })
     const columns = [
       {
         key: 1,
@@ -147,8 +161,9 @@ export default {
     };
 
     const getList=()=>{
-      findFileByTenant({
-        keyword:user.tenant,
+      findFile({
+        keyword:user.getUserInfo().tenantCode,
+        // keyword:'',
         ...requestParams
       }).then(r=>{
         documents.value=r.data.data.content

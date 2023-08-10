@@ -88,7 +88,7 @@ import { ImportOutlined} from '@ant-design/icons-vue'
 
 import Logo from "@/components/logo/logo.vue";
 import {user} from "@/view/pageConfig";
-import {HAS_LOGIN} from "@/store/constant";
+import {HAS_LOGIN, USER_INFO} from "@/store/constant";
 import storage from "@/store/store";
 import {message} from "ant-design-vue";
 import {logout, myInfo} from "@/api/api";
@@ -143,6 +143,8 @@ export default {
       myInfo().then(res=>{
         if(res.data.code!==0){
           user.removeLoginState()
+        }else {
+          storage.set(USER_INFO,res.data.data)
         }
       })
     })
