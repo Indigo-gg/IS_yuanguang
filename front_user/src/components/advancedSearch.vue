@@ -25,9 +25,9 @@
       </select>
     </div>
 
-    <div class="search">
-      <input type="text" v-model="searchQuery" @input="handleInput" placeholder="请输入搜索关键字">
-      <button @click="handleSearch">搜索</button>
+    <div class="search-container">
+      <input type="text" class="search-input" v-model="searchQuery" @input="handleInput" placeholder="请输入搜索关键字">
+      <button  class="search-button" @click="handleSearch">搜索</button>
     </div>
 
     <ul>
@@ -75,14 +75,11 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .filters {
   margin-bottom: 10px;
 }
 
-.search {
-  margin-bottom: 10px;
-}
 
 ul {
   list-style-type: none;
@@ -95,5 +92,42 @@ li {
 
 h3 {
   margin-bottom: 5px;
+}
+select {
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  border-radius: 0;
+  border: solid 1px #ccc;
+  background: #fff;
+  padding: 10px;
+}
+.search-button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.search-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px;
+}
+
+.search-input {
+  position: relative;
+}
+
+input[type="text"] {
+  width: 300px;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 </style>
