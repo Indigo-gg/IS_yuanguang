@@ -7,22 +7,24 @@
         </template>
       </a-button>
     </div>
-    <a-table :columns="columns" :dataSource="documents" rowKey="id">
+    <a-table :columns="columns" :dataSource="documents" rowKey="id" :scroll="{ x: 1500 }">
       <template #bodyCell="{ column, record }">
-      <template v-if="column.dataIndex === 'action'">
-        <a-button type="link" @click="openEditModal(record)">编辑</a-button>
-        <a-button type="link" @click="deleteDocument(record.id)">删除</a-button>
-      </template>
+        <template v-if="column.dataIndex === 'imgUrl'">
+          <a-avatar shape="square" size="large" :src="record.imgUrl||require('@/assets/boy.png')"/>
+        </template>
+        <template v-if="column.dataIndex === 'type'">
+          <a-tag color="blue">{{ record.type }}</a-tag>
+        </template>
+        <template v-if="column.dataIndex === 'website'">
+          <a target="_blank" :href="record.website"> {{ record.website }}</a>
+        </template>
+        <template v-if="column.dataIndex === 'timestamp'">
+          <a> {{DateToString(record.timestamp)}}</a>
+        </template>
         <template v-if="column.dataIndex === 'action'">
           <a-button type="link" @click="openEditModal(record)">编辑</a-button>
           <a-button type="link" @click="deleteDocument(record.id)">删除</a-button>
-        </template><template v-if="column.dataIndex === 'action'">
-        <a-button type="link" @click="openEditModal(record)">编辑</a-button>
-        <a-button type="link" @click="deleteDocument(record.id)">删除</a-button>
-      </template><template v-if="column.dataIndex === 'action'">
-        <a-button type="link" @click="openEditModal(record)">编辑</a-button>
-        <a-button type="link" @click="deleteDocument(record.id)">删除</a-button>
-      </template>
+        </template>
       </template>
     </a-table>
     <a-modal v-model:visible="modalVisible" @ok="handleOk" @cancel="handleCancel">
@@ -53,6 +55,8 @@ import {onMounted, ref} from "vue";
 import {deleteFile, findFile} from "@/api/result";
 import {user} from '@/view/pageConfig'
 import {PlusOutlined} from "@ant-design/icons-vue";
+import {DateToString} from "@/utils/date";
+
 export default {
   name: "index",
   components: {
@@ -60,7 +64,7 @@ export default {
   },
   setup() {
     const form = ref({
-      title:'',
+      title: '',
       content: "",
       imgUrl: "",
       tenantCode: user.getUserInfo(),
@@ -80,8 +84,10 @@ export default {
     const columns = [
       {
         key: 1,
-        title: 'ID',
+        title: '索引',
         dataIndex: 'id',
+        fixed: 'left',
+        width: 300
       },
       {
         key: 2,
@@ -102,6 +108,7 @@ export default {
         key: 5,
         title: '图片地址',
         dataIndex: 'imgUrl',
+        width: 100
       },
       {
         key: 6,
@@ -109,7 +116,7 @@ export default {
         dataIndex: 'type',
       },
 
-       {
+      {
         key: 8,
         title: '创建时间',
         dataIndex: 'timestamp',
@@ -120,6 +127,7 @@ export default {
         key: 0,
         title: '操作',
         dataIndex: 'action',
+        fixed: 'right',
         width: '10%'
       },
     ];
@@ -159,9 +167,9 @@ export default {
     const deleteDocument = (id) => {
       // 调用删除文档接口
       deleteFile({
-        id:id
-      }).then(res=>{
-        if(res.data.code===0){
+        id: id
+      }).then(res => {
+        if (res.data.code === 0) {
           getList()
         }
       })
@@ -169,17 +177,17 @@ export default {
       // 成功后刷新文档列表 documents
     };
 
-    const getList=()=>{
+    const getList = () => {
       findFile({
+        // keyword: '',
         keyword:'',
-        // keyword:'',
         ...requestParams
-      }).then(r=>{
-        documents.value=r.data.data.content
+      }).then(r => {
+        documents.value = r.data.data.content
       })
     }
     onMounted(() => {
-     getList()
+      getList()
     })
 
 
@@ -193,6 +201,9 @@ export default {
       handleOk,
       handleCancel,
       deleteDocument,
+      DateToString:(time)=>{
+        return DateToString(time)
+      }
     };
   },
 }
