@@ -134,7 +134,7 @@ export default {
               message.success('注册成功！')
               router.push({path: '/login'})
             } else {
-              message.error('登录信息出错，请重新填写')
+              message.error('注册信息出错，请重新填写')
             }
 
           }).catch(err=>{
