@@ -9,7 +9,7 @@ function checkLogin(){
 
 router.beforeEach(to=>{
     // 将Login页放到白名单里面
-    if(to.name==='login')
+    if(to.name==='login'||to.name==='register')
         return true
     // 如果未登录
     if(!checkLogin()){

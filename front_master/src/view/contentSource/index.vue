@@ -13,6 +13,16 @@
         <a-button type="link" @click="openEditModal(record)">编辑</a-button>
         <a-button type="link" @click="deleteDocument(record.id)">删除</a-button>
       </template>
+        <template v-if="column.dataIndex === 'action'">
+          <a-button type="link" @click="openEditModal(record)">编辑</a-button>
+          <a-button type="link" @click="deleteDocument(record.id)">删除</a-button>
+        </template><template v-if="column.dataIndex === 'action'">
+        <a-button type="link" @click="openEditModal(record)">编辑</a-button>
+        <a-button type="link" @click="deleteDocument(record.id)">删除</a-button>
+      </template><template v-if="column.dataIndex === 'action'">
+        <a-button type="link" @click="openEditModal(record)">编辑</a-button>
+        <a-button type="link" @click="deleteDocument(record.id)">删除</a-button>
+      </template>
       </template>
     </a-table>
     <a-modal v-model:visible="modalVisible" @ok="handleOk" @cancel="handleCancel">
@@ -110,8 +120,7 @@ export default {
         key: 0,
         title: '操作',
         dataIndex: 'action',
-        width: '10%',
-        slots: {customRender: 'action'},
+        width: '10%'
       },
     ];
 
@@ -162,7 +171,7 @@ export default {
 
     const getList=()=>{
       findFile({
-        keyword:user.getUserInfo().tenantCode,
+        keyword:'',
         // keyword:'',
         ...requestParams
       }).then(r=>{
